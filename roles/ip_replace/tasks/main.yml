@@ -1,0 +1,29 @@
+- name: Replace old hostname with new hostname (client)
+  ansible.builtin.replace:
+    path: /opt/client/src/App.js
+    regexp: 'http://localhost:3001'
+    replace: 'http://44.220.82.179:3001'
+
+- name: Replace old hostname with new hostname (server-cors)
+  ansible.builtin.replace:
+    path: /opt/server/index.js
+    regexp: 'http://localhost:3000'
+    replace: '*'    
+
+- name: Replace old user with new user (db_user)
+  ansible.builtin.replace:
+    path: /opt/server/index.js
+    regexp: 'user: "root"'
+    replace: 'user: "shrisab"' 
+
+- name: Replace old password with new password (db_pass)
+  ansible.builtin.replace:
+    path: /opt/server/index.js
+    regexp: 'password: ""'
+    replace: 'password: "Password123"'   
+
+- name: Replace old dbname with new dbname (db_name)
+  ansible.builtin.replace:
+    path: /opt/server/index.js
+    regexp: 'database: "employeeSystem"'
+    replace: 'database: "demoansible_db"'        

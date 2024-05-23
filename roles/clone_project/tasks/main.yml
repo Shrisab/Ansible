@@ -1,0 +1,8 @@
+---
+- name: Clone project if not already cloned
+  git:
+    repo: https://github.com/KG-1510/employee-management-dbms.git
+    dest: /opt  # Specify the destination directory
+    clone: yes
+    update: yes
+    force: yes

@@ -1,0 +1,21 @@
+---
+- name: Install Node.js dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - curl
+    - software-properties-common
+
+- name: Install Node.js version
+  become: yes
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_{{ node_major_version }}.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+  vars:
+    node_major_version: "14"
+
+- name: Install build_essential
+  apt:
+    name: build-essential
+    state: present 

@@ -1,0 +1,87 @@
+# - name: install mysql     
+#   apt: name=mysql-server update_cache=yes cache_valid_time=3600 state=present
+
+# - name: start up the mysql service  
+#   shell: "service mysql start"  
+
+# - name: ensure mysql is enabled to run on startup  
+#   service: name=mysql state=started enabled=true
+     
+# - name: update mysql root password for all root accounts  
+#   mysql_user:  
+#    name: root  
+#    host: "{{ item }}"  
+#    password: "{{ mysql_root_password }}"  
+#    login_user: root  
+#    login_password: "{{ mysql_root_password }}"  
+#    check_implicit_admin: yes  
+#    priv: "*.*:ALL,GRANT"   
+
+# - name: create a new database  
+#   mysql_db: name=testdb state=present login_user=root login_password="{{ mysql_root_password }}"  
+
+# - name: add sample data to database  
+#   copy: src=dump.sql dest=/tmp/dump.sql  
+
+# - name: insert sample data into database  
+#   mysql_db: name=testdb state=import target=/tmp/dump.sql login_user=root login_password="{{ mysql_root_password }}"   
+
+# # - name: copy configuration
+# #   ansible.builtin.template:
+# #     src: dump.sql
+# #     dest: /etc/nginx/sites-enabled/shrisab-conf
+# #     owner: root
+# #     group: root
+# #     mode: '0644'
+
+- name: Installing Mysql and dependencies
+  package:
+   name: "{{item}}"
+   state: present
+   update_cache: yes
+  loop:
+      - mysql-server
+      - mysql-client 
+      - python3-mysqldb
+      - libmysqlclient-dev
+  become: yes
+
+- name: start and enable mysql service
+  service:
+   name: mysql
+   state: started
+   enabled: yes
+
+- name: creating mysql user (medium_post)
+  mysql_user:
+   name: "{{db_user}}"
+   password: "{{db_pass}}"
+   priv: '*.*:ALL'
+   host: '%'
+   state: present
+
+- name: creating medium_db
+  mysql_db:
+   name: "{{db_name}}"
+   state: present
+
+- name: add sample data to database  
+  template: src=dump.sql dest=/tmp/dump.sql   
+
+- name: insert sample data into database  
+  mysql_db: name=testdb state=import target=/tmp/dump.sql login_user="{{db_user}}" login_password="{{ db_pass }}"   
+
+# - name: Enable remote login to mysql
+#   lineinfile:
+#    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+#    regexp: '^bind-address'
+#    line: 'bind-address = 0.0.0.0'
+#    backup: yes
+#    notify:
+#       - Restart mysql
+
+# handlers:
+# - name: Restart mysql
+#    service:
+#    name: mysql
+#    state: restarted
